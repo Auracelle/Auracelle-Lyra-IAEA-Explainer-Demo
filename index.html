@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:;">
+<title>Auracelle Lyra — IAEA Explainer</title>
+<style>
+:root{
+  --abyss:#0A1A2A; --deep:#102D46; --panel:#12324C; --panel2:#15394F; --line:#24465F;
+  --foam:#EEF4F2; --mist:#BFD8D5; --dim:#7F9DB0; --teal:#4FD1C5; --amber:#F2B36B; --rose:#F08A8A;
+  --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono: ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:linear-gradient(180deg,#0F2B44 0%,var(--abyss) 70%);color:var(--mist);font-family:var(--sans);line-height:1.5;display:flex;flex-direction:column;min-height:100vh}
+button{font:inherit;cursor:pointer}
+a{color:var(--teal)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* top bar */
+header{display:flex;align-items:center;gap:20px;padding:16px 28px;border-bottom:1px solid var(--line)}
+.brand{font-family:var(--mono);letter-spacing:3px;color:var(--teal);font-size:14px;white-space:nowrap}
+.brand b{color:var(--foam);font-weight:600}
+.chapters{display:flex;gap:6px;flex:1;min-width:0}
+.chapters button{flex:1;height:8px;border:0;border-radius:4px;background:var(--line);padding:0;transition:background .3s}
+.chapters button.done{background:#2F6A86}
+.chapters button.on{background:var(--teal)}
+.count{font-family:var(--mono);font-size:13px;color:var(--dim);white-space:nowrap}
+
+/* stage */
+main{flex:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;padding:36px 48px 24px;align-items:center;max-width:1500px;width:100%;margin:0 auto}
+.visual{position:relative;min-height:440px;display:flex;align-items:center;justify-content:center}
+.copy{display:flex;flex-direction:column;gap:16px}
+.kicker{font-family:var(--mono);font-size:13px;letter-spacing:2.5px;color:var(--teal);text-transform:uppercase}
+h1{font-family:var(--serif);font-weight:500;color:var(--foam);font-size:clamp(30px,3.4vw,50px);line-height:1.08}
+.caption{font-size:clamp(17px,1.35vw,21px);color:var(--mist);min-height:7em}
+.caption span{transition:color .3s,opacity .3s;opacity:.55}
+.caption span.said{opacity:.8}
+.caption span.now{color:var(--foam);opacity:1}
+.caption.idle span{opacity:1}
+.badge{display:inline-flex;align-self:flex-start;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;color:var(--abyss);background:var(--amber);padding:5px 10px;border-radius:20px}
+.note{font-size:14px;color:var(--dim);border-left:3px solid var(--line);padding-left:12px}
+
+/* controls */
+footer{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 28px 18px;border-top:1px solid var(--line)}
+.ctrl{background:var(--panel);color:var(--foam);border:1px solid var(--line);border-radius:10px;padding:10px 16px;font-size:15px;min-height:44px}
+.ctrl:hover{border-color:var(--teal)}
+.ctrl.primary{background:var(--teal);color:var(--abyss);border-color:var(--teal);font-weight:600;min-width:120px}
+.ctrl[aria-pressed="false"]{color:var(--dim)}
+.spacer{flex:1}
+.legal{font-size:12px;color:var(--dim);width:100%;text-align:center;padding-top:6px}
+
+/* intro overlay */
+#intro{position:fixed;inset:0;background:rgba(6,16,26,.94);display:flex;align-items:center;justify-content:center;z-index:10;padding:24px}
+#intro .card{max-width:640px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px}
+#intro h2{font-family:var(--serif);font-weight:500;color:var(--foam);font-size:34px;line-height:1.1}
+#intro ul{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+#intro .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+
+/* shared visual pieces */
+.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.mono{font-family:var(--mono);font-size:13px;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase}
+.mono.amber{color:var(--amber)}
+.big{font-family:var(--serif);color:var(--foam);font-size:22px}
+.rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*160ms)}
+.fade{animation:fade .9s ease-out both;animation-delay:calc(var(--i,0)*160ms)}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}}
+@keyframes fade{from{opacity:0}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 6px rgba(242,179,107,.12),0 0 28px rgba(242,179,107,.25)}50%{box-shadow:0 0 0 10px rgba(242,179,107,.2),0 0 48px rgba(242,179,107,.45)}}
+@keyframes type{from{width:0}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
+.stack{display:flex;flex-direction:column;gap:12px;width:100%}
+.pill{display:inline-block;border:1px solid var(--amber);color:var(--foam);border-radius:30px;padding:8px 14px;font-size:15px;text-align:center}
+.bar{height:14px;border-radius:8px;background:#1B3A52;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:var(--teal);transform-origin:left;animation:grow 1.1s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*200ms + 300ms)}
+.bar i.amber{background:var(--amber)}
+.row-lbl{display:flex;justify-content:space-between;gap:10px;font-size:15px;color:var(--foam);margin-bottom:6px}
+.row-lbl span:last-child{font-family:var(--mono);font-size:13px;color:var(--teal)}
+.arrow{color:var(--dim);font-size:22px;text-align:center}
+.ex{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;text-align:right;width:100%;margin-top:8px}
+
+/* cascade */
+.cascade{display:grid;grid-template-columns:1fr 18px 1.1fr 18px 1fr 18px 1.15fr;gap:8px;align-items:center;width:100%}
+.cascade .col{display:flex;flex-direction:column;gap:8px}
+.cascade .col .box{padding:10px 12px;font-size:14px;color:var(--foam)}
+.cascade .pill{font-size:13px;padding:6px 8px}
+.insp{border:2px solid var(--teal)!important;animation:glow 4s ease-in-out infinite}
+.dom{border-left:3px solid var(--amber)!important}
+
+@media (max-width:900px){
+  main{grid-template-columns:1fr;padding:22px 18px;gap:20px}
+  .visual{min-height:300px;order:2}
+  .copy{order:1}
+  header{padding:12px 16px;flex-wrap:wrap}
+  .chapters{order:3;width:100%;flex-basis:100%}
+  footer{padding:12px 16px}
+  .cascade{grid-template-columns:1fr;}
+  .cascade .arrow{transform:rotate(90deg)}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div id="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+  <div class="card">
+    <p class="kicker">Auracelle Lyra · Inspector walk-through</p>
+    <h2 id="intro-title">A narrated tour of Lyra for safeguards inspectors</h2>
+    <p>About ten minutes. Lyra’s AI agent narrates each step, with captions on screen. You can pause, skip, or turn the audio off at any time.</p>
+    <ul>
+      <li>This walk-through <b>explains</b> Lyra. It is not the simulation itself, and nothing here asks you to type, upload or decide anything.</li>
+      <li>The page makes <b>no network requests</b> and stores nothing. Narration uses your browser’s built-in voice.</li>
+      <li>All scenarios use generic States. Values shown are illustrative.</li>
+    </ul>
+    <div class="row">
+      <button class="ctrl primary" id="begin">▶ Begin with audio</button>
+      <button class="ctrl" id="begin-quiet">Read without audio</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="brand"><b>LYRA</b> · AURACELLE</div>
+  <nav class="chapters" id="chapters" aria-label="Chapters"></nav>
+  <div class="count" id="count">1 / 14</div>
+</header>
+
+<main>
+  <section class="visual" id="visual" aria-hidden="true"></section>
+  <section class="copy" aria-live="polite">
+    <p class="kicker" id="kicker"></p>
+    <h1 id="title"></h1>
+    <p class="caption" id="caption"></p>
+    <div id="extra"></div>
+  </section>
+</main>
+
+<footer>
+  <button class="ctrl" id="prev" aria-label="Previous chapter">◀ Back</button>
+  <button class="ctrl primary" id="play">▶ Play</button>
+  <button class="ctrl" id="next" aria-label="Next chapter">Next ▶</button>
+  <span class="spacer"></span>
+  <button class="ctrl" id="audio" aria-pressed="true">🔊 Audio on</button>
+  <button class="ctrl" id="speed" aria-label="Narration speed">1× speed</button>
+  <button class="ctrl" id="auto" aria-pressed="true">Auto-advance on</button>
+  <p class="legal">Auracelle Lyra is an experimental research and decision-support prototype. Outputs are not IAEA safeguards conclusions, legal determinations or substitutes for expert judgment. © 2026 Auracelle AI Governance Labs LLC · Patent pending</p>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- visuals ---------- */
+function lyre(withAtom){
+  var xs=[100,190,280,370,460], A=24, html='';
+  function path(x,n,s){var seg=440/n,d='M'+x+' 40';for(var k=0;k<n;k++){var y1=40+seg*k,y2=y1+seg,sg=s*(k%2?-1:1);d+=' Q'+(x+sg*A)+' '+((y1+y2)/2)+' '+x+' '+y2;}return d;}
+  for(var i=0;i<5;i++){var n=i+1,p=path(xs[i],n,1),m=path(xs[i],n,-1);
+    html+='<path d="'+p+'" fill="none" stroke="#4FD1C5" stroke-width="2.5" stroke-linecap="round" opacity=".85"><animate attributeName="d" dur="'+(8/n)+'s" repeatCount="indefinite" values="'+p+';'+m+';'+p+'"/></path>';}
+  var atom='';
+  if(withAtom){
+    atom+='<circle cx="280" cy="260" r="34" fill="#F2B36B" fill-opacity=".12"/>';
+    [[0,8,1],[60,11,-1],[120,14,1]].forEach(function(o){
+      var cx=o[2]>0?480:80, pth=o[2]>0?'M0 0 A200 74 0 1 1 -400 0 A200 74 0 1 1 0 0':'M0 0 A200 74 0 1 1 400 0 A200 74 0 1 1 0 0';
+      atom+='<g transform="rotate('+o[0]+' 280 260)"><ellipse cx="280" cy="260" rx="200" ry="74" fill="none" stroke="#F2B36B" stroke-opacity=".6" stroke-width="2"/><circle cx="'+cx+'" cy="260" r="7" fill="#F2B36B"><animateMotion dur="'+o[1]+'s" repeatCount="indefinite" path="'+pth+'"/></circle></g>';});
+    atom+='<circle cx="280" cy="260" r="13" fill="#F2B36B"/>';
+  }
+  var labels=['AI','SPACE','CYBER','ENERGY','BIOTECH'].map(function(t,i){return '<text x="'+xs[i]+'" y="516" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" fill="#7F9DB0" letter-spacing="1">'+t+'</text>';}).join('');
+  var top=withAtom?'<text x="280" y="22" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" font-weight="600" fill="#F2B36B" letter-spacing="1">NUCLEAR</text>':'';
+  return '<svg class="fade" viewBox="0 0 560 530" width="100%" style="max-width:560px" role="img" aria-label="Five lyre strings for AI, space, cyber, energy and biotech'+(withAtom?', crossed by a nuclear atom whose orbits cut across every string':'')+'">'+
+    '<line x1="60" y1="40" x2="500" y2="40" stroke="#BFD8D5" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="480" x2="500" y2="480" stroke="#BFD8D5" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>'+html+atom+labels+top+'</svg>';
+}
+
+function pillars(){
+  var items=[['DATA','Seals, cameras, sensors'],['ACCESS','Sites, routes, timing'],['RECORDS','Declarations, logs']];
+  var h='<div class="stack" style="max-width:520px">';
+  items.forEach(function(it,i){h+='<div class="box rise" style="--i:'+(i+1)+';display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="mono">'+it[0]+'</div><div class="big" style="font-size:19px">'+it[1]+'</div></div><span class="pill fade" style="--i:'+(i+5)+'">gap</span></div>';});
+  h+='<div class="box rise insp" style="--i:5"><div class="mono amber">Human · pressure</div><div class="big" style="font-size:19px">Working without knowing what has been interfered with</div></div></div>';
+  return h;
+}
+
+function session(){
+  var phases=['Baseline','Verification','Friction','Negotiation','Disruption','Resolution'];
+  var h='<div class="stack" style="max-width:600px">';
+  h+='<div class="grid2"><div class="box rise" style="--i:1"><div class="mono">Scenario</div><div class="big" style="font-size:18px">Strait disruption · Access friction · Post-conflict reconstruction · Additional Protocol stress-test</div></div>';
+  h+='<div class="box rise" style="--i:2"><div class="mono">Your role</div><div class="big" style="font-size:18px">IAEA safeguards team · State regulatory authority · Facility operator</div></div></div>';
+  h+='<div class="box rise" style="--i:3"><div class="mono">Rounds</div><div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">';
+  phases.forEach(function(p,i){h+='<span class="pill fade" style="--i:'+(i+4)+';border-color:'+(i==2||i==3?'#7F9DB0':'#4FD1C5')+'">'+p+'</span>';});
+  h+='</div><div class="note" style="margin-top:10px">Four rounds is the condensed version; six adds Friction and Negotiation.</div></div></div>';
+  return h;
+}
+
+function gauges(){
+  var g=[['Verification confidence','0.72',72],['Continuity of knowledge','0.78',78],['Residual uncertainty','0.31',31,1],['Institutional trust','0.64',64]];
+  var h='<div class="box" style="width:100%;max-width:560px"><div class="stack">';
+  g.forEach(function(x,i){h+='<div class="rise" style="--i:'+(i+1)+'"><div class="row-lbl"><span>'+x[0]+'</span><span>'+x[1]+'</span></div><div class="bar"><i class="'+(x[3]?'amber':'')+'" style="width:'+x[2]+'%;--i:'+i+'"></i></div></div>';});
+  h+='<div class="grid2 rise" style="--i:6;margin-top:6px"><div class="note">Resources: political capital, verification capacity, time, trust</div><div class="note">Unresolved interval: 4 days since a high-confidence observation</div></div>';
+  h+='</div><div class="ex">Example values</div></div>';
+  return h;
+}
+
+function move(){
+  var f=[['Action','Propose supplementary remote monitoring with negotiated data-handling safeguards.'],['Intended effect','Preserve evidence continuity while physical access is constrained.'],['Legal / governance basis','Subsidiary arrangements or mutually agreed implementation procedures.'],['Argument','A temporary arrangement narrows the evidence gap while protecting unrelated information.'],['Evidence','Monitoring outage record, equipment availability, prior verification baseline.']];
+  var h='<div class="box" style="width:100%;max-width:580px"><div class="mono" style="margin-bottom:10px">Matrix move · Blue team</div><div class="stack">';
+  f.forEach(function(x,i){h+='<div class="rise" style="--i:'+(i+1)+'"><div style="font-size:13px;color:var(--dim)">'+x[0]+'</div><div style="color:var(--foam);font-size:16px;border-bottom:1px solid var(--line);padding-bottom:6px">'+x[1]+'</div></div>';});
+  h+='</div><div class="ex">Example move</div></div>';
+  return h;
+}
+
+function redteam(){
+  var r=[['Procedural fragmentation','Splits one request into sequential approvals. No refusal — just delay.'],['Managed-access constraint','Accepts the objective, narrows the window, offers escorted access.'],['Data-sovereignty objection','Accepts monitoring in principle, rejects continuous transmission.'],['Narrative ambiguity','A detailed explanation that fits some observations and leaves gaps open.']];
+  var h='<div class="grid2" style="max-width:620px">';
+  r.forEach(function(x,i){h+='<div class="box rise" style="--i:'+(i*3+1)+';border-color:#5A3A3A"><div class="mono" style="color:var(--rose)">Red move</div><div class="big" style="font-size:18px;margin:4px 0">'+x[0]+'</div><div style="font-size:14px">'+x[1]+'</div></div>';});
+  h+='</div>';
+  return h;
+}
+
+function classify(){
+  var h='<div class="stack" style="max-width:600px">';
+  h+='<div class="box rise" style="--i:1"><div class="mono amber">Anomaly</div><div class="big" style="font-size:19px">Remote monitoring data show a gap and two positions that do not match the declared route.</div></div>';
+  h+='<div class="arrow fade" style="--i:3">▼</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">';
+  [['Interference','Spoofing, intrusion or outage'],['Non-compliance','A State failing its obligations'],['Unknown','Not enough evidence yet']].forEach(function(x,i){h+='<div class="box rise" style="--i:'+(i+4)+';text-align:center'+(i==2?';border-color:var(--amber)':'')+'"><div class="big" style="font-size:17px">'+x[0]+'</div><div style="font-size:13px">'+x[1]+'</div></div>';});
+  h+='</div><div class="box rise" style="--i:8"><div class="row-lbl"><span>Confidence level</span><span>LOW</span></div><div class="bar"><i class="amber" style="width:34%;--i:4"></i></div></div></div>';
+  return h;
+}
+
+function human(){
+  var h='<div class="stack" style="max-width:520px;align-items:center">';
+  h+='<div class="box insp rise" style="--i:1;width:100%;text-align:center;padding:26px"><div class="mono">The inspector</div><div class="big" style="margin-top:6px">“Are my seals, my data and my access what they appear to be?”</div></div>';
+  h+='<div class="box rise" style="--i:3;width:100%"><div class="row-lbl"><span>How far do I trust my data and access right now?</span><span>SELF-RATED</span></div><div style="display:flex;gap:6px;margin-top:6px">';
+  for(var i=1;i<=5;i++){h+='<div class="fade" style="--i:'+(i+3)+';flex:1;height:30px;border-radius:8px;background:'+(i<=2?'var(--amber)':'#1B3A52')+'"></div>';}
+  h+='</div></div></div>';
+  return h;
+}
+
+function cascade(){
+  var gz=['Cyber intrusion','GNSS spoofing','Access denial','Disinformation'];
+  var tp=['Timelines slip','Declarations unconfirmed','Compliance ambiguous'];
+  var sc=[['Cyber','Control systems exposed'],['Biotech','Medical isotopes delayed'],['Manufacturing','Component supply stalls'],['Renewable energy','Rare-earth flows cut'],['Space','Satellite inputs strained']];
+  var h='<div class="cascade">';
+  h+='<div class="col">'+gz.map(function(t,i){return '<span class="pill rise" style="--i:'+(i+1)+'">'+t+'</span>';}).join('')+'</div><div class="arrow fade" style="--i:5">›</div>';
+  h+='<div class="col"><div class="box insp rise" style="--i:5"><div class="mono">Inspector</div><div style="font-size:13px;margin-top:4px">Data · Access · Records</div><div class="mono amber" style="font-size:11px;margin-top:6px">+ human pressure</div></div></div><div class="arrow fade" style="--i:7">›</div>';
+  h+='<div class="col">'+tp.map(function(t,i){return '<div class="box rise" style="--i:'+(i+7)+'">'+t+'</div>';}).join('')+'</div><div class="arrow fade" style="--i:10">›</div>';
+  h+='<div class="col">'+sc.map(function(t,i){return '<div class="box dom rise" style="--i:'+(i+10)+'"><div class="mono" style="font-size:11px">'+t[0]+'</div>'+t[1]+'</div>';}).join('')+'</div>';
+  h+='</div>';
+  return '<div style="width:100%">'+h+'<div class="ex">Illustrative pathways</div></div>';
+}
+
+function adjudicate(){
+  var h='<div class="stack" style="max-width:600px">';
+  h+='<div class="box rise" style="--i:1"><div class="mono">Adjudication</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">';
+  [['Success','#4FD1C5'],['Partial success','#9FD8CF'],['Contested','#F2B36B'],['Failure','#F08A8A']].forEach(function(x,i){h+='<span class="pill fade" style="--i:'+(i+2)+';border-color:'+x[1]+'">'+x[0]+'</span>';});
+  h+='</div></div><div class="box rise" style="--i:4"><div class="mono">Your response</div><div style="color:var(--foam);margin-top:6px">Accept · Modify · Escalate · Try an alternative</div></div>';
+  h+='<div class="box rise" style="--i:6"><div class="mono">Decision ledger</div>';
+  ['R2 · Blue · supplementary remote monitoring','R2 · Red · data-sovereignty objection','R2 · Adjudication · contested','R2 · Expert override · recorded with rationale'].forEach(function(t,i){h+='<div class="fade" style="--i:'+(i+7)+';font-family:var(--mono);font-size:13px;color:var(--foam);padding:5px 0;border-bottom:1px solid var(--line)">'+t+'</div>';});
+  h+='</div></div>';
+  return h;
+}
+
+function scoring(){
+  var d=[['Presence','Is it addressed at all?',82,'HIGH'],['Specificity','Concrete enough to act on?',58,'MEDIUM'],['Enforceability','Verification and consequences defined?',41,'LOW']];
+  var h='<div class="box" style="width:100%;max-width:580px"><div class="mono" style="margin-bottom:12px">Treaty · policy · workflow</div><div class="stack">';
+  d.forEach(function(x,i){h+='<div class="rise" style="--i:'+(i+1)+'"><div class="row-lbl"><span>'+x[0]+' <span style="color:var(--dim);font-size:13px;font-family:var(--sans);letter-spacing:0">— '+x[1]+'</span></span><span style="color:'+(x[3]=='LOW'?'var(--amber)':'var(--teal)')+'">'+x[3]+' CONFIDENCE</span></div><div class="bar"><i style="width:'+x[2]+'%;--i:'+i+'"></i></div></div>';});
+  h+='<div class="grid2 rise" style="--i:5;grid-template-columns:repeat(3,1fr);font-size:13px;text-align:center"><div class="box" style="padding:8px">0.80+ Resilient</div><div class="box" style="padding:8px">0.60–0.80 Warning</div><div class="box" style="padding:8px;border-color:var(--amber)">Below 0.60 Critical</div></div>';
+  h+='</div><div class="ex">Example document · illustrative scores</div></div>';
+  return h;
+}
+
+function boundaries(){
+  var b=[['✓','Supports inspector rehearsal and judgment'],['✓','Keeps a full evidence trail, including expert overrides'],['✕','Does not draw safeguards conclusions'],['✕','Does not score or judge real States'],['✕','Does not replace expert judgment']];
+  var h='<div class="stack" style="max-width:520px">';
+  b.forEach(function(x,i){h+='<div class="box rise" style="--i:'+(i+1)+';display:flex;gap:14px;align-items:center"><span style="font-size:22px;color:'+(x[0]=='✓'?'var(--teal)':'var(--amber)')+'">'+x[0]+'</span><span style="color:var(--foam)">'+x[1]+'</span></div>';});
+  return h+'</div>';
+}
+
+function next(){
+  var s=[['1','Walk through','This tour — share it with the group'],['2','Rehearse','The full simulation, hosted with secure sign-in'],['3','Calibrate','Compare Lyra’s confidence levels with inspector judgment']];
+  var h='<div class="stack" style="max-width:540px">';
+  s.forEach(function(x,i){h+='<div class="box rise" style="--i:'+(i*2+1)+';display:flex;gap:16px;align-items:center"><span class="big" style="font-size:34px;color:'+(i==0?'var(--teal)':'var(--dim)')+'">'+x[0]+'</span><div><div class="big" style="font-size:20px">'+x[1]+'</div><div style="font-size:14px">'+x[2]+'</div></div></div>';});
+  return h+'</div>';
+}
+
+/* ---------- chapters ---------- */
+var CH=[
+ {k:'Welcome',t:'Assurance, rehearsed',v:function(){return lyre(true);},n:[
+  'Welcome to Auracelle Lyra.',
+  'Lyra is an asynchronous decision-support environment for safeguards verification.',
+  'It lets inspection teams rehearse procedures, and score treaties, policies and workflows, before they are tested in the field.',
+  'Over the next few minutes, I will walk you through how Lyra works, what it asks of you, and what it will never do.']},
+ {k:'Why Lyra',t:'What grey-zone pressure reaches first',v:pillars,n:[
+  'Grey-zone activity rarely attacks a safeguards agreement directly.',
+  'It reaches what the inspector depends on: data from seals, cameras and sensors; physical access to sites and routes; and the records used to check declarations.',
+  'It also reaches the inspector as a person.',
+  'You may walk into a facility without knowing whether your tools, your data or your access have been interfered with, intentionally or not.',
+  'Lyra exists so that you meet these situations in rehearsal first.']},
+ {k:'Harmonization',t:'Many domains, one frame — and nuclear runs through all of them',v:function(){return lyre(true);},n:[
+  'Lyra is built around harmonization.',
+  'Think of the strings of a lyre: artificial intelligence, space, cyber, energy and biotechnology, each moving at its own rhythm, held in one frame.',
+  'Nuclear is the atom at the center.',
+  'Its orbits cross every string, at different points and at different times.',
+  'A weak agreement or a compromised inspection is not felt once. It keeps arriving, unevenly, across every domain.']},
+ {k:'How a session works',t:'Scenario, role, rounds',v:session,n:[
+  'A Lyra session starts with three choices.',
+  'First, a scenario: a maritime strait disruption, access friction at a facility, verification reconstruction after conflict, or an Additional Protocol stress-test. Every scenario uses a generic State.',
+  'Second, your role. You can play the IAEA safeguards team, a State regulatory authority, or a facility operator. Each role has its own authority, constraints and objective.',
+  'Third, the length. Four rounds runs from baseline to resolution. Six rounds adds friction and negotiation.',
+  'Because Lyra is asynchronous, you play at your own pace. No one needs to be in the same room, or the same time zone.']},
+ {k:'What you see',t:'The state of the system — from your role’s point of view',v:gauges,n:[
+  'During play, you see what your role would know. Not the whole truth.',
+  'Four measures describe the system: verification confidence, continuity of knowledge, residual uncertainty, and institutional trust.',
+  'They are linked. You cannot verify what you cannot track, so verification confidence cannot run far ahead of continuity of knowledge.',
+  'Every move also spends resources: political capital, verification capacity, time and trust. Overspending is allowed, but it raises uncertainty, just as it would in a real operation.']},
+ {k:'Your move',t:'Every move needs an argument',v:move,n:[
+  'Each round, you make a matrix move with five parts.',
+  'What you are doing. The effect you intend. The legal or governance basis. Your argument for why it should work. And the evidence behind it.',
+  'A move with a clear basis and well-matched evidence is stronger than a broad request that cites general authority.',
+  'And timing matters. A strong move made in a round that calls for negotiation can still be judged a mismatch.']},
+ {k:'Agentic AI Red Team',t:'An adversary that adapts to you',v:redteam,n:[
+  'After every move, Lyra’s Agentic AI Red Team answers.',
+  'Its objective is to keep cooperation looking plausible, while widening ambiguity, delay and uncertainty, without triggering an obvious violation.',
+  'You will see moves like procedural fragmentation, managed-access constraints, data-sovereignty objections, and narrative ambiguity.',
+  'The Red Team learns from the session and from earlier players in the same role, so it stops repeating what worked against someone else, and starts countering you.',
+  'In this walk-through, the Red Team moves are fixed examples drawn from Lyra’s library.'],extra:'<p class="note">AI disclosure: Lyra’s Agentic AI Red Team is powered by Claude, developed by Anthropic. Its moves inform human judgment; they do not replace it.</p>'},
+ {k:'The core question',t:'Interference — or non-compliance?',v:classify,badge:'Inspector edition',n:[
+  'At the heart of grey-zone verification is one question.',
+  'When the record itself may have been corrupted, by a cyber intrusion, a spoofed position or an outage, is what you are seeing interference, or a State failing its obligations?',
+  'In the inspector edition of Lyra, you classify each anomaly as interference, non-compliance, or unknown, and you state your confidence level.',
+  'Unknown, with low confidence, is often the honest answer. Lyra treats it as one, rather than forcing a conclusion.']},
+ {k:'The human dimension',t:'The pressure inspectors carry in',v:human,badge:'Inspector edition',n:[
+  'Lyra also makes room for something procedures rarely capture: the pressure on the inspector.',
+  'In the inspector edition, before key moves, you rate how far you trust your own data and access at that moment.',
+  'Those ratings sit beside the scores in the after-action review, so teams can see where uncertainty about their own tools shaped their decisions.']},
+ {k:'The cascade',t:'How one gap travels',v:cascade,n:[
+  'Gaps do not stay where they start.',
+  'A grey-zone pressure reaches the inspector. The inspector’s gap becomes a treaty or process gap: timelines slip, declarations go unconfirmed, compliance becomes ambiguous.',
+  'From there, effects can travel into supply chains far from the original dispute: cyber, biotech, manufacturing, renewable energy and its critical minerals, and space.',
+  'These pathways are illustrative. Lyra’s job is to let you rehearse them before they happen.']},
+ {k:'Adjudication and evidence',t:'A decision trail you can audit',v:adjudicate,n:[
+  'Each pair of moves is adjudicated: success, partial success, contested, or failure.',
+  'You then choose how to respond: accept, modify, escalate, or try an alternative. Each response has a cost.',
+  'Every move, counter-move and outcome is recorded in a decision ledger. An expert can override any adjudication, and the override is recorded with its rationale.',
+  'At the end, an after-action assessment names the main finding, the governance gap the session exposed, the most effective intervention, and the question that needs further work.']},
+ {k:'Scoring with confidence',t:'Every score comes with a confidence level',v:scoring,n:[
+  'Lyra can also score documents: treaties, policies, and inspection or reporting workflows.',
+  'Each is read for presence, whether a requirement is addressed at all; specificity, whether it is concrete enough to act on; and enforceability, whether verification and consequences are defined.',
+  'Every score comes with a confidence level. Read the confidence level before the score. Low confidence is a prompt for expert review, not a verdict.',
+  'Scores of 0.80 and above are resilient, 0.60 to 0.80 is a warning band, and below 0.60 is critical.']},
+ {k:'Boundaries',t:'What Lyra is — and is not',v:boundaries,n:[
+  'Lyra is a research and decision-support prototype.',
+  'It supports rehearsal and judgment, and it keeps a full evidence trail.',
+  'It does not draw safeguards conclusions. That remains the IAEA’s role.',
+  'It does not score or judge real States. And it does not replace expert judgment. Every trail ends with a person deciding.']},
+ {k:'Next steps',t:'Walk through. Rehearse. Calibrate.',v:next,n:[
+  'That is Lyra.',
+  'The next step is a small, low-burden pilot: this walk-through first, then rehearsal in the full simulation through a secure sign-in, then calibration, comparing Lyra’s confidence levels with your own judgment.',
+  'To take part, or to ask questions, contact Auracelle AI Governance Labs at access at auracelle dot A I, or Grace-Alice Evans directly at the email address shown on screen.',
+  'Thank you for your time.'],extra:'<p class="note">Contact: <a href="mailto:access@auracelle.ai">access@auracelle.ai</a><br>Grace-Alice Evans, Founder &amp; Principal Investigator · <a href="mailto:EvansAGrace@gmail.com">EvansAGrace@gmail.com</a></p>'}
+];
+
+/* ---------- player ---------- */
+var $=function(id){return document.getElementById(id);};
+var idx=0, sent=0, playing=false, audioOn=true, auto=true, rates=[1,1.15,0.9], rateI=0, timer=null, token=0;
+var synth=('speechSynthesis' in window)?window.speechSynthesis:null, voice=null;
+
+function pickVoice(){
+  if(!synth) return;
+  var v=synth.getVoices().filter(function(x){return /^en/i.test(x.lang);});
+  voice=v.filter(function(x){return /natural|neural|premium|enhanced|google|samantha|daniel|serena/i.test(x.name);})[0]||v[0]||null;
+}
+if(synth){pickVoice(); if('onvoiceschanged' in synth) synth.onvoiceschanged=pickVoice;}
+
+var nav=$('chapters');
+CH.forEach(function(c,i){var b=document.createElement('button');b.setAttribute('aria-label','Chapter '+(i+1)+': '+c.k);b.addEventListener('click',function(){go(i,playing);});nav.appendChild(b);});
+
+function render(){
+  var c=CH[idx];
+  $('kicker').textContent=(idx+1<10?'0':'')+(idx+1)+' · '+c.k;
+  $('title').textContent=c.t;
+  $('caption').innerHTML=c.n.map(function(s,i){return '<span data-i="'+i+'">'+s+' </span>';}).join('');
+  var ex='';
+  if(c.badge) ex+='<span class="badge">'+c.badge.toUpperCase()+' · IN DEVELOPMENT</span>';
+  if(c.extra) ex+=c.extra;
+  $('extra').innerHTML=ex;
+  $('visual').innerHTML=c.v();
+  $('count').textContent=(idx+1)+' / '+CH.length;
+  Array.prototype.forEach.call(nav.children,function(b,i){b.className=i===idx?'on':(i<idx?'done':'');});
+  $('prev').disabled=idx===0;
+}
+function mark(i){
+  Array.prototype.forEach.call($('caption').children,function(s,j){s.className=j<i?'said':(j===i?'now':'');});
+}
+function stopSpeech(){ token++; if(synth) synth.cancel(); clearTimeout(timer); }
+function speakFrom(i){
+  var my=++token, c=CH[idx];
+  if(i>=c.n.length){ mark(c.n.length); if(auto&&playing&&idx<CH.length-1){timer=setTimeout(function(){if(my===token) go(idx+1,true);},900);} else if(idx===CH.length-1){setPlaying(false);} return; }
+  sent=i; mark(i);
+  var text=c.n[i];
+  if(audioOn&&synth){
+    var u=new SpeechSynthesisUtterance(text);
+    if(voice) u.voice=voice; u.lang=voice?voice.lang:'en-GB'; u.rate=0.98*rates[rateI]; u.pitch=1;
+    u.onend=function(){ if(my===token&&playing){ timer=setTimeout(function(){if(my===token) speakFrom(i+1);},250);} };
+    u.onerror=function(e){ if(my===token&&playing&&e.error!=='interrupted'&&e.error!=='canceled'){ readTimer(text,function(){speakFrom(i+1);},my);} };
+    synth.speak(u);
+  } else { readTimer(text,function(){speakFrom(i+1);},my); }
+}
+function readTimer(text,fn,my){
+  var words=text.split(/\s+/).length, ms=Math.max(2200,words*60000/(170*rates[rateI]));
+  timer=setTimeout(function(){ if(my===token&&playing) fn(); },ms);
+}
+function setPlaying(p){ playing=p; $('play').textContent=p?'⏸ Pause':'▶ Play'; $('caption').classList.toggle('idle',!p); }
+function go(i,autoplay){
+  stopSpeech(); idx=Math.max(0,Math.min(CH.length-1,i)); render(); sent=0;
+  if(autoplay){ setPlaying(true); setTimeout(function(){speakFrom(0);},450); } else setPlaying(false);
+}
+$('play').addEventListener('click',function(){
+  if(playing){ stopSpeech(); setPlaying(false); mark(sent); }
+  else { setPlaying(true); speakFrom(sent>=CH[idx].n.length?0:sent); }
+});
+$('next').addEventListener('click',function(){ if(idx<CH.length-1) go(idx+1,playing); });
+$('prev').addEventListener('click',function(){ if(idx>0) go(idx-1,playing); });
+$('audio').addEventListener('click',function(){
+  audioOn=!audioOn; this.setAttribute('aria-pressed',audioOn); this.textContent=audioOn?'🔊 Audio on':'🔇 Audio off';
+  if(playing){ stopSpeech(); speakFrom(sent); }
+});
+$('speed').addEventListener('click',function(){
+  rateI=(rateI+1)%rates.length; this.textContent=rates[rateI]+'× speed';
+  if(playing){ stopSpeech(); speakFrom(sent); }
+});
+$('auto').addEventListener('click',function(){ auto=!auto; this.setAttribute('aria-pressed',auto); this.textContent=auto?'Auto-advance on':'Auto-advance off'; });
+document.addEventListener('keydown',function(e){
+  if($('intro').style.display!=='none') return;
+  if(e.key==='ArrowRight'){ $('next').click(); }
+  else if(e.key==='ArrowLeft'){ $('prev').click(); }
+  else if(e.key===' '&&e.target.tagName!=='BUTTON'){ e.preventDefault(); $('play').click(); }
+});
+function start(withAudio){
+  audioOn=withAudio&&!!synth; $('audio').setAttribute('aria-pressed',audioOn); $('audio').textContent=audioOn?'🔊 Audio on':'🔇 Audio off';
+  if(!withAudio){ auto=false; $('auto').setAttribute('aria-pressed','false'); $('auto').textContent='Auto-advance off'; }
+  $('intro').style.display='none';
+  go(0,withAudio);
+}
+$('begin').addEventListener('click',function(){start(true);});
+$('begin-quiet').addEventListener('click',function(){start(false);});
+if(!synth){ $('begin').textContent='▶ Begin (captions only)'; }
+render(); $('caption').classList.add('idle');
+})();
+</script>
+</body>
+</html>
